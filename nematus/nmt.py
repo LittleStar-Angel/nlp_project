@@ -925,10 +925,12 @@ def train(dim_word=100,  # word vector dimensionality
                 return 1., 1., 1.
 
             # verbose
+            cost_list = []
             if numpy.mod(uidx, dispFreq) == 0:
                 ud = time.time() - ud_start
                 wps = (last_disp_samples) / float(ud)
                 print 'Epoch ', eidx, 'Update ', uidx, 'Cost ', cost, 'UD ', ud, "{0:.2f} sentences/s".format(wps)
+
                 ud_start = time.time()
                 last_disp_samples = 0
 
@@ -1040,7 +1042,10 @@ def train(dim_word=100,  # word vector dimensionality
                     ipdb.set_trace()
 
                 print 'Valid ', valid_err
-
+                cost_list.append([uidx, cost, valid_err])
+                with open('cost','w') as f:
+                    json.dump(cost,f)
+                    
                 if external_validation_script:
                     print "Calling external validation script"
                     if p_validation is not None and p_validation.poll() is None:
